@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdant | Sculptural Plants</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sage: {
+                            100: '#EEF3ED',
+                            400: '#A4C3AD',
+                            500: '#86A98D',
+                            600: '#6C8C71',
+                            800: '#1B2A1E',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'Helvetica Neue', 'Helvetica', 'sans-serif'],
+                        display: ['Arial', 'Helvetica Neue', 'Helvetica', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #EEF3ED;
+            color: #1B2A1E;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom pedestal shadow for plants to give them an integrated architectural look */
+        .pedestal-shadow {
+            box-shadow: 0 20px 40px -10px rgba(27, 42, 30, 0.15);
+        }
+    </style>
+</head>
+<body class="selection:bg-sage-500 selection:text-white">
+
+    <!-- HERO SECTION -->
+    <section class="bg-sage-500 text-white relative pb-32 pt-6">
+        <!-- Navbar -->
+        <header class="px-8 max-w-[1440px] mx-auto flex items-center justify-between z-50 relative">
+            <div class="text-3xl font-bold font-display tracking-wide">Verdant</div>
+            <nav class="hidden md:flex items-center space-x-12 text-sm font-medium tracking-wide">
+                <a href="#" class="hover:text-sage-100 transition-colors">Shop</a>
+                <a href="#" class="hover:text-sage-100 transition-colors">Collections</a>
+                <a href="#" class="hover:text-sage-100 transition-colors">Care Guide</a>
+                <a href="#" class="hover:text-sage-100 transition-colors">Journal</a>
+            </nav>
+            <button class="border border-white/40 rounded-full px-6 py-2.5 text-sm font-medium hover:bg-white hover:text-sage-800 transition-all duration-300">
+                Shop Collection
+            </button>
+        </header>
+
+        <!-- Hero Content -->
+        <div class="max-w-[1440px] mx-auto px-8 mt-16 flex flex-col md:flex-row relative z-10">
+            <!-- Left Text -->
+            <div class="w-full md:w-5/12 pt-16 relative z-30">
+                <h1 class="text-[3.5rem] md:text-[4.5rem] leading-[1.05] font-display font-bold mb-6 tracking-tight">
+                    Curated<br>Greenery For<br>Modern Spaces
+                </h1>
+                <p class="text-[15px] max-w-[320px] text-white/90 leading-relaxed font-light mt-6">
+                    Bring life into your everyday environment with our hand-selected sculptural plants, nurtured for their unique architectural forms.
+                </p>
+            </div>
+            
+            <!-- Right Composition -->
+            <div class="w-full md:w-7/12 relative h-[500px] mt-12 md:mt-0">
+                <!-- Large Left Plant -->
+                <div class="absolute left-0 bottom-[10%] w-48 flex flex-col items-center z-20 group">
+                    <img src="https://images.unsplash.com/photo-1611211232932-da3113c5b960?auto=format&fit=crop&q=80&w=400" alt="Tall snake plant in white pot" class="w-40 h-56 object-cover rounded-t-full rounded-b-3xl pedestal-shadow group-hover:-translate-y-2 transition-transform duration-500">
+                    <div class="w-44 h-10 bg-[#B8D4BF] rounded-2xl mt-[-15px] z-[-1] shadow-lg"></div>
+                </div>
+                <!-- Small Ground Plant -->
+                <div class="absolute left-[38%] bottom-[5%] w-28 flex flex-col items-center z-30 group">
+                    <img src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&q=80&w=400" alt="Small potted plant" class="w-24 h-32 object-cover rounded-t-full rounded-b-xl pedestal-shadow group-hover:-translate-y-2 transition-transform duration-500 delay-75">
+                    <div class="w-28 h-12 bg-[#F8FAF8] rounded-xl mt-[-10px] z-[-1] shadow-md"></div>
+                </div>
+                <!-- Middle Plant -->
+                <div class="absolute left-[62%] bottom-[12%] w-32 flex flex-col items-center z-20 group">
+                    <img src="https://images.unsplash.com/photo-1512428813834-c702c7702b78?auto=format&fit=crop&q=80&w=400" alt="Medium potted plant" class="w-28 h-36 object-cover rounded-t-full rounded-b-xl pedestal-shadow group-hover:-translate-y-2 transition-transform duration-500 delay-150">
+                    <div class="w-32 h-6 bg-[#F8FAF8] rounded-xl mt-[-5px] z-[-1] shadow-md border-b border-gray-200"></div>
+                </div>
+                <!-- Top Floating Plant -->
+                <div class="absolute top-[5%] right-[28%] w-24 flex flex-col items-center z-10 group">
+                    <img src="https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&q=80&w=400" alt="Small hanging plant" class="w-20 h-28 object-cover rounded-t-full rounded-b-xl pedestal-shadow group-hover:-translate-y-2 transition-transform duration-500">
+                    <div class="w-24 h-16 bg-[#F8FAF8] rounded-2xl mt-[-15px] z-[-1] shadow-lg"></div>
+                </div>
+                <!-- Right Green Step Plant -->
+                <div class="absolute right-[5%] bottom-[18%] w-40 flex flex-col items-center z-10 group">
+                    <img src="https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?auto=format&fit=crop&q=80&w=400" alt="Spiky succulent" class="w-28 h-40 object-cover rounded-t-full rounded-b-xl pedestal-shadow group-hover:-translate-y-2 transition-transform duration-500 delay-100">
+                    <div class="w-36 h-36 bg-sage-600 rounded-t-2xl rounded-bl-2xl mt-[-15px] z-[-1] shadow-2xl relative border-t border-white/10">
+                        <div class="absolute right-[-20px] bottom-0 w-20 h-20 bg-sage-600 rounded-tl-2xl shadow-inner border-t border-l border-white/10"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wave Divider -->
+        <div class="absolute bottom-0 left-0 w-full leading-[0] transform translate-y-px z-40 pointer-events-none">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto min-w-[1440px]">
+                <path d="M0 60C240 120 480 120 720 80C960 40 1200 20 1440 40V120H0V60Z" fill="#EEF3ED"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- MIDDLE SECTION -->
+    <section class="bg-sage-100 text-sage-800 pt-24 pb-16 relative">
+        <div class="max-w-[1440px] mx-auto px-8">
+            <!-- Top Part -->
+            <div class="flex flex-col md:flex-row items-center gap-16 mb-24">
+                <!-- Left Image Card -->
+                <div class="w-full md:w-5/12 relative">
+                    <div class="absolute top-[-20px] left-[-20px] w-12 h-12 rounded-full bg-sage-400 opacity-40 blur-2xl"></div>
+                    <div class="bg-sage-500 rounded-[2.5rem] p-0 h-[420px] w-[90%] mx-auto flex items-end justify-center relative overflow-hidden shadow-[0_30px_60px_-15px_rgba(27,42,30,0.2)] group">
+                        <div class="absolute inset-0 bg-gradient-to-t from-sage-800/40 to-transparent z-10 transition-opacity duration-500 group-hover:opacity-60"></div>
+                        <img src="https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="Close-up of lush green fern fronds" />
+                    </div>
+                </div>
+                <!-- Right Text -->
+                <div class="w-full md:w-7/12 md:pl-8">
+                    <h2 class="text-[2.8rem] md:text-[3.2rem] leading-[1.1] font-display font-bold mb-6 tracking-tight text-sage-800">
+                        Cultivate Your<br>Sanctuary
+                    </h2>
+                    <p class="text-[15px] opacity-80 mb-10 max-w-md leading-relaxed font-light">
+                        Every plant is carefully nurtured in our greenhouse and selected for its unique architectural form. Discover botanical companions that transform your living spaces into serene, breathing environments.
+                    </p>
+                    <button class="bg-sage-600 text-white rounded-full px-8 py-3.5 text-sm font-medium hover:bg-sage-800 transition-all duration-300 shadow-[0_8px_20px_rgba(108,140,113,0.3)] hover:shadow-[0_4px_10px_rgba(108,140,113,0.3)] hover:-translate-y-0.5">
+                        Explore Botanicals
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Part Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-start pt-10">
+                <!-- Card 1 -->
+                <div class="bg-sage-500 rounded-[2rem] h-[280px] p-6 relative overflow-hidden shadow-lg flex items-end justify-center group cursor-pointer">
+                    <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                    <div class="flex gap-4 relative z-20 w-full justify-center pb-2 px-4">
+                       <img src="https://images.unsplash.com/photo-1611211232932-da3113c5b960?auto=format&fit=crop&q=80&w=200" alt="Snake plant" class="w-20 h-32 object-cover rounded-t-full shadow-lg transform group-hover:-translate-y-2 transition-transform duration-500"/>
+                       <img src="https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?auto=format&fit=crop&q=80&w=200" alt="Aloe vera" class="w-24 h-40 object-cover rounded-t-full shadow-lg transform group-hover:-translate-y-4 transition-transform duration-500 delay-75"/>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="flex flex-col items-center text-center px-4 group cursor-pointer">
+                    <div class="w-[140px] h-[140px] rounded-full overflow-hidden mb-6 shadow-xl border-[6px] border-sage-100 relative">
+                        <img src="https://images.unsplash.com/photo-1453904300235-0f2f60b15b5d?auto=format&fit=crop&q=80&w=300" alt="Indoor tree" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                    </div>
+                    <h3 class="text-lg font-bold font-display mb-2 text-sage-800">Indoor Trees</h3>
+                    <p class="text-[14px] opacity-70 max-w-[220px] leading-relaxed font-light">
+                        Make a structural statement with large-scale foliage.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="flex flex-col items-center text-center px-4 group cursor-pointer">
+                    <div class="w-[140px] h-[140px] rounded-full overflow-hidden mb-6 shadow-xl border-[6px] border-sage-100 relative">
+                        <img src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&q=80&w=300" alt="Rare succulent" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                    </div>
+                    <h3 class="text-lg font-bold font-display mb-2 text-sage-800">Rare Succulents</h3>
+                    <p class="text-[14px] opacity-70 max-w-[220px] leading-relaxed font-light">
+                        Low-maintenance desert specimens for any surface.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- THIRD SECTION -->
+    <section class="bg-sage-100 text-sage-800 py-32 relative overflow-hidden">
+        <div class="max-w-[1440px] mx-auto pl-8 pr-0 md:pr-0 flex flex-col md:flex-row items-center">
+            <!-- Left Text -->
+            <div class="w-full md:w-5/12 pr-12 relative z-20">
+                <h2 class="text-[3.2rem] md:text-[3.8rem] leading-[1.05] font-display font-bold mb-6 tracking-tight text-sage-800">
+                    The Art of<br>Placement
+                </h2>
+                <p class="text-[15px] opacity-80 mb-10 leading-relaxed max-w-md font-light">
+                    Plants are more than decor; they are living sculptures that breathe life into your interior architecture. Explore our guide on integrating greenery thoughtfully.
+                </p>
+                <button class="border border-sage-800/30 rounded-full px-8 py-3.5 text-sm font-medium hover:bg-sage-800 hover:text-sage-100 transition-all duration-300">
+                    Read the Journal &rarr;
+                </button>
+            </div>
+            
+            <!-- Right Large Container -->
+            <div class="w-full md:w-7/12 relative mt-16 md:mt-0">
+                <div class="bg-sage-500 rounded-l-[3rem] p-10 h-[520px] w-[110%] relative flex items-end justify-start gap-6 md:gap-12 shadow-2xl overflow-hidden pl-12 md:pl-20 border-l border-t border-white/10">
+                    <div class="absolute inset-0 bg-gradient-to-r from-sage-800/10 to-transparent"></div>
+                    
+                    <!-- Plant 1 -->
+                    <div class="flex flex-col items-center z-10 w-32 md:w-40 relative pb-10 group cursor-pointer">
+                        <img src="images/sculptural_plant_1_1791440035461.jpg" alt="Potted plant" class="w-28 md:w-36 h-48 md:h-60 object-cover rounded-t-full shadow-2xl relative z-10 group-hover:-translate-y-3 transition-transform duration-500" />
+                        <div class="w-32 md:w-40 h-16 bg-[#EEF3ED] rounded-xl mt-[-20px] z-0 shadow-lg border-b border-gray-200"></div>
+                    </div>
+                    
+                    <!-- Plant 2 (Taller) -->
+                    <div class="flex flex-col items-center z-20 w-36 md:w-44 mb-16 group cursor-pointer">
+                        <img src="images/sculptural_plant_2_1791440050234.jpg" alt="Large potted plant" class="w-32 md:w-40 h-56 md:h-72 object-cover rounded-t-full shadow-2xl relative z-10 group-hover:-translate-y-4 transition-transform duration-500" />
+                        <div class="w-36 md:w-44 h-20 bg-white rounded-xl mt-[-20px] z-0 shadow-xl border-b border-gray-200"></div>
+                    </div>
+                    
+                    <!-- Plant 3 (Smallest) -->
+                    <div class="flex flex-col items-center z-10 w-24 md:w-28 pb-4 group cursor-pointer">
+                        <img src="images/sculptural_plant_3_1791440063355.jpg" alt="Small potted plant" class="w-20 md:w-24 h-36 md:h-44 object-cover rounded-t-full shadow-2xl relative z-10 group-hover:-translate-y-2 transition-transform duration-500" />
+                        <div class="w-24 md:w-28 h-12 bg-white rounded-xl mt-[-15px] z-0 shadow-md border-b border-gray-100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-sage-100 text-sage-800/60 py-10 px-8 border-t border-sage-500/20">
+        <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center text-sm font-light">
+            <div class="mb-4 md:mb-0">&copy; 2026 Verdant. Curating nature.</div>
+            <div class="flex space-x-8">
+                <a href="#" class="hover:text-sage-800 transition-colors">Privacy</a>
+                <a href="#" class="hover:text-sage-800 transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-sage-800 transition-colors">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

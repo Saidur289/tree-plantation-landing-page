@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdant | Motion Design Concept</title>
+
+    <script>
+        // Hide the hero's load-in elements only when the intro will actually play.
+        // The timeout un-hides everything if GSAP never arrives (offline / CDN blocked).
+        (function () {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var root = document.documentElement;
+            root.classList.add('js-anim');
+            setTimeout(function () { root.classList.remove('js-anim'); }, 3000);
+        })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --font: Arial, "Helvetica Neue", Helvetica, sans-serif;
+            --page: #EEF6EA;
+            --mint: #E2F0DB;
+            --mint-light: #EBF5E6;
+            --ink: #1E2920;
+            --ink-soft: #46564A;
+            --ink-mute: #66766A;
+            --leaf: #357D3D;
+            --leaf-dark: #2A6631;
+            --rail: 72px;
+            --gutter: clamp(20px, 4vw, 64px);
+            /* distance from a full-width parent's edge to the centred 1480px column (0 below 1480px);
+               the % resolves where the variable is used, so the scrollbar is never counted */
+            --edge: max(0px, calc((100% - 1480px) / 2));
+            --spring: cubic-bezier(.34, 1.56, .64, 1);
+
+            /* Pot finishes */
+            --pot-white: linear-gradient(180deg, rgba(255,255,255,0) 72%, rgba(70,95,70,.14)),
+                         linear-gradient(90deg, #c6d0c3 0%, #edf1eb 16%, #fff 38%, #f5f8f3 62%, #d3dbd0 86%, #bcc7b9 100%);
+            --pot-cream: linear-gradient(180deg, rgba(255,255,255,0) 72%, rgba(90,95,40,.14)),
+                         linear-gradient(90deg, #c2c78f 0%, #e1e5b8 22%, #eef0cc 45%, #e4e7bf 66%, #c9ce98 88%, #b8bd85 100%);
+            --pot-sage: linear-gradient(180deg, rgba(255,255,255,0) 72%, rgba(30,60,30,.18)),
+                        linear-gradient(90deg, #6f9a6c 0%, #8fb88b 25%, #a3c79f 45%, #8db689 70%, #6b956a 100%);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            margin: 0;
+            background: var(--page);
+            color: var(--ink);
+            font-family: var(--font);
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        img { display: block; max-width: none; }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+        ::selection { background: #86A98D; color: #fff; }
+        :focus-visible { outline: 2px solid var(--leaf); outline-offset: 3px; border-radius: 6px; }
+
+        .wrap {
+            max-width: 1480px;
+            margin: 0 auto;
+            padding-left: calc(var(--rail) + clamp(16px, 3vw, 44px));
+            padding-right: var(--gutter);
+        }
+
+        /* Elements the intro animates in; see the head script. */
+        .js-anim .nav,
+        .js-anim .hero-title,
+        .js-anim .hero-sub,
+        .js-anim .hero .rail { visibility: hidden; }
+
+        /* ---------- Navigation ---------- */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            height: 78px;
+            display: grid;
+            grid-template-columns: var(--rail) auto 1fr auto;
+            align-items: center;
+            padding-left: var(--edge);
+            padding-right: calc(var(--edge) + var(--gutter));
+            background: rgba(238, 246, 234, .9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(30, 41, 32, .06);
+            transition: box-shadow .4s ease;
+        }
+        .nav.is-scrolled { box-shadow: 0 10px 30px -18px rgba(30, 60, 32, .35); }
+        .burger {
+            justify-self: center;
+            width: 40px; height: 40px;
+            display: grid; place-content: center; gap: 5px;
+            border-radius: 12px;
+            transition: background .3s ease;
+        }
+        .burger:hover { background: rgba(53, 125, 61, .08); }
+        .burger span { display: block; width: 20px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform .5s var(--spring), opacity .3s; }
+        .drawer-open .burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .drawer-open .burger span:nth-child(2) { opacity: 0; }
+        .drawer-open .burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+        .logo {
+            font-family: var(--font);
+            font-weight: 800;
+            font-size: clamp(26px, 2.3vw, 34px);
+            letter-spacing: -.01em;
+            padding-left: clamp(4px, 1vw, 14px);
+        }
+        .nav-links {
+            justify-self: center;
+            display: flex;
+            gap: clamp(20px, 2.6vw, 40px);
+            list-style: none;
+            margin: 0; padding: 0;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .nav-links > li { position: relative; }
+        .nav-links > li > a,
+        .nav-links > li > button { display: inline-flex; align-items: center; gap: 4px; padding: 8px 0; position: relative; }
+        .nav-links > li > a::after,
+        .nav-links > li > button::after {
+            content: ''; position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px;
+            background: var(--leaf); transform: scaleX(0); transform-origin: right; transition: transform .45s ease;
+        }
+        .nav-links > li:hover > a::after,
+        .nav-links > li:hover > button::after { transform: scaleX(1); transform-origin: left; }
+        .chev { width: 10px; height: 10px; transition: transform .4s var(--spring); }
+        .has-menu.is-open .chev, .has-menu:has(:focus-visible) .chev { transform: rotate(180deg); }
+        @media (hover: hover) { .has-menu:hover .chev { transform: rotate(180deg); } }
+        .menu {
+            position: absolute; top: calc(100% + 6px); left: 50%;
+            min-width: 180px; padding: 8px; margin: 0; list-style: none;
+            background: #fff; border-radius: 16px;
+            box-shadow: 0 20px 40px -18px rgba(30, 60, 32, .35), 0 0 0 1px rgba(30, 41, 32, .05);
+            opacity: 0; visibility: hidden;
+            transform: translate(-50%, -8px) scale(.96); transform-origin: 50% 0;
+            transition: opacity .25s ease, transform .5s var(--spring), visibility 0s .25s;
+        }
+        .has-menu.is-open .menu, .has-menu:has(:focus-visible) .menu {
+            opacity: 1; visibility: visible; transform: translate(-50%, 0) scale(1);
+            transition: opacity .25s ease, transform .5s var(--spring), visibility 0s;
+        }
+        @media (hover: hover) {
+            .has-menu:hover .menu {
+                opacity: 1; visibility: visible; transform: translate(-50%, 0) scale(1);
+                transition: opacity .25s ease, transform .5s var(--spring), visibility 0s;
+            }
+        }
+        .menu a { display: block; padding: 8px 12px; border-radius: 10px; font-weight: 400; color: var(--ink-soft); }
+        .menu a:hover { background: var(--mint); color: var(--ink); }
+        .nav-cta {
+            border: 1.5px solid rgba(30, 41, 32, .25);
+            border-radius: 999px;
+            padding: 11px 24px;
+            font-size: 15px; font-weight: 500;
+            transition: background .3s ease, color .3s ease, transform .5s var(--spring);
+        }
+        .nav-cta:hover { background: var(--ink); color: var(--page); transform: translateY(-1px); }
+
+        /* Drawer */
+        .drawer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+        .drawer-scrim { position: absolute; inset: 0; background: rgba(20, 35, 22, .35); opacity: 0; transition: opacity .4s ease; }
+        .drawer-panel {
+            position: absolute; top: 0; bottom: 0; left: 0;
+            width: min(380px, 86vw);
+            padding: 96px 40px 40px;
+            background: var(--page);
+            transform: translateX(-102%);
+            transition: transform .7s var(--spring);
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .drawer-panel a {
+            font-family: var(--font); font-weight: 700; font-size: 30px;
+            padding: 6px 0; transition: color .3s, transform .5s var(--spring);
+        }
+        .drawer-panel a:hover { color: var(--leaf); transform: translateX(8px); }
+        .drawer-panel small { margin-top: auto; color: var(--ink-mute); font-size: 13px; }
+        .drawer-close { position: absolute; top: 14px; left: 12px; width: 40px; height: 40px; border-radius: 12px; font-size: 24px; line-height: 1; }
+        .drawer-open .drawer { pointer-events: auto; }
+        .drawer-open .drawer-scrim { opacity: 1; }
+        .drawer-open .drawer-panel { transform: none; }
+
+        /* ---------- Section rail (left-hand labels) ---------- */
+        .rail {
+            position: absolute; top: 0; bottom: 0; left: var(--edge);
+            width: var(--rail);
+            z-index: 6;
+            pointer-events: none;
+        }
+        .rail-line {
+            position: absolute; top: 14px; bottom: 14px; left: 50%;
+            width: 1.5px; margin-left: -1px;
+            background: currentColor;
+            opacity: .55;
+        }
+        .rail-line::before, .rail-line::after {
+            content: ''; position: absolute; left: 50%; width: 7px; height: 7px;
+            border: solid currentColor; border-width: 1.5px 0 0 1.5px;
+        }
+        .rail-line::before { top: 0; transform: translate(-50%, 0) rotate(45deg); }
+        .rail-line::after { bottom: 0; transform: translate(-50%, 0) rotate(225deg); }
+        .rail-label {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-90deg);
+            white-space: nowrap;
+            padding: 6px 14px;
+            font-size: 15px; font-weight: 500; letter-spacing: .06em;
+            background: var(--rail-bg, var(--mint));
+        }
+
+        /* ---------- Shared plant scene system ----------
+           Every scene is a size container, so plants, pots and pedestals are all sized in cqw
+           and the whole arrangement scales as one picture. */
+        .scene { container-type: inline-size; position: relative; }
+        .item {
+            position: absolute;
+            left: calc(var(--x) * 1cqw);
+            bottom: calc(var(--b) * 1cqw);
+            width: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .item-inner { display: flex; flex-direction: column; align-items: center; }
+        .sway {
+            position: relative; z-index: 2;
+            display: flex; flex-direction: column; align-items: center;
+            transform-origin: 50% 100%;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* dashed "selection" outline that appears on hover, as in the motion spec */
+        .sway::after {
+            content: ''; position: absolute; z-index: 3; pointer-events: none;
+            inset: -5% -14% 12% -14%;
+            border: 1.5px dashed rgba(255, 255, 255, .85);
+            border-radius: 48% 48% 30% 30%;
+            opacity: 0; transform: scale(.94);
+            transition: opacity .35s ease, transform .6s var(--spring);
+        }
+        .sway:hover::after { opacity: 1; transform: none; }
+        .foliage {
+            position: relative; z-index: 1;
+            width: calc(var(--fw) * 1cqw); height: auto;
+            margin-bottom: calc(var(--sink, calc(var(--pw) * .13 + .5)) * -1cqw);
+            pointer-events: none; user-select: none; -webkit-user-drag: none;
+            transition: filter .45s ease;
+        }
+        .foliage.own-pot { margin-bottom: 0; }
+        .sway:hover .foliage { filter: drop-shadow(0 0 .35cqw rgba(255,255,255,.9)) drop-shadow(0 0 1.4cqw rgba(255,255,255,.45)); }
+
+        .pot { position: relative; width: calc(var(--pw) * 1cqw); height: calc(var(--ph) * 1cqw); }
+        .pot-rim {
+            position: absolute; left: 0; right: 0; z-index: 0;
+            top: calc(var(--pw) * -.13cqw); height: calc(var(--pw) * .26cqw);
+            border-radius: 50%;
+            background: radial-gradient(ellipse 50% 50% at 50% 50%, #3c3124 0 58%, #574735 64%, var(--lip, #e8ede5) 68%, var(--lip-hi, #fff) 82%, var(--lip-lo, #d3dbd0) 100%);
+        }
+        .pot-body {
+            position: absolute; inset: 0; z-index: 2;
+            background: var(--pot, var(--pot-white));
+            clip-path: polygon(0 0, 100% 0, calc(100% - var(--taper, 9%)) 100%, var(--taper, 9%) 100%);
+            -webkit-mask: radial-gradient(ellipse 45% calc(var(--pw) * .115cqw) at 50% 0, transparent 97%, #000 100%);
+                    mask: radial-gradient(ellipse 45% calc(var(--pw) * .115cqw) at 50% 0, transparent 97%, #000 100%);
+        }
+        .pot.cream { --pot: var(--pot-cream); --lip: #e4e7c0; --lip-hi: #f3f5d9; --lip-lo: #cfd39f; }
+        .pot.sage  { --pot: var(--pot-sage);  --lip: #9cc298; --lip-hi: #b4d4b0; --lip-lo: #84ad80; }
+
+        .base { position: relative; z-index: 1; }
+        .base::after {
+            content: ''; position: absolute; z-index: -1; pointer-events: none;
+            left: -12%; right: -12%;
+            bottom: calc(var(--bw) * -.07cqw); height: calc(var(--bw) * .16cqw);
+            background: radial-gradient(closest-side, rgba(32, 66, 34, .34), rgba(32, 66, 34, 0));
+        }
+        .block {
+            width: calc(var(--bw) * 1cqw); height: calc(var(--bh) * 1cqw);
+            margin-top: calc(var(--bw) * .07cqw);
+            background: linear-gradient(90deg, #578656, #679866 50%, #5c8d5b);
+            box-shadow: inset 0 -1.2cqw 2cqw rgba(20, 50, 20, .14);
+        }
+        .block::before {
+            content: ''; position: absolute; left: 0; right: 0; bottom: 100%;
+            height: calc(var(--bw) * .16cqw);
+            background: linear-gradient(180deg, #86b582, #a2c99d);
+            clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
+        }
+        .ground { width: calc(var(--bw) * 1cqw); height: 0; }
+        .scene-floor {
+            position: absolute; left: -50%; right: -50%; bottom: 0;
+            height: calc(var(--floor, 20) * 1cqw);
+            background: linear-gradient(180deg, var(--floor-top, #b9d6b2), var(--floor-bottom, #d4e8ce));
+            box-shadow: 0 -1px 0 rgba(255, 255, 255, .25), 0 -3cqw 4cqw -2cqw rgba(40, 80, 40, .12);
+        }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            background: linear-gradient(180deg, #86AF83, #7FA27F);
+            --rail-bg: rgba(34, 66, 38, .38);
+        }
+        .hero .rail { color: #fff; }
+        .hero .rail-label { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 99px; }
+
+        /* Studio photograph, layered (hero + placement panel):
+           sharp photo > blurred copy masked to one side > green scrim > drifting sunlight > sheen > grain.
+           Each user sets --focus (crop), --soft-mask (where the blur shows) and --scrim. */
+        .hero-media {
+            position: absolute; inset: 0; z-index: 0; overflow: hidden;
+            --focus: 62% 62%;
+            --soft-mask: linear-gradient(90deg, #000 0%, #000 32%, transparent 58%);
+            --scrim:
+                linear-gradient(90deg, rgba(34, 66, 38, .58) 0%, rgba(34, 66, 38, .34) 32%, rgba(34, 66, 38, 0) 60%),
+                linear-gradient(180deg, rgba(28, 56, 32, .2) 0%, rgba(28, 56, 32, 0) 28%);
+        }
+        .media-inner { position: absolute; inset: -3%; }
+        .media-img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: var(--focus, 50% 50%);
+        }
+        .media-img--soft {
+            filter: blur(16px) saturate(1.08);
+            transform: scale(1.05);
+            -webkit-mask-image: var(--soft-mask);
+                    mask-image: var(--soft-mask);
+        }
+        .media-scrim { position: absolute; inset: 0; background: var(--scrim); pointer-events: none; }
+        .media-light {
+            position: absolute; inset: -20%;
+            background:
+                radial-gradient(ellipse 30% 22% at 66% 82%, rgba(255, 248, 214, .5), rgba(255, 248, 214, 0) 70%),
+                radial-gradient(ellipse 22% 30% at 84% 30%, rgba(255, 255, 240, .32), rgba(255, 255, 240, 0) 70%);
+            mix-blend-mode: soft-light;
+            animation: sunlight 16s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes sunlight { to { transform: translate(-5%, -2%) scale(1.08); opacity: .55; } }
+        .media-sheen {
+            position: absolute; inset: 0;
+            background: linear-gradient(105deg, rgba(255,255,255,0) 38%, rgba(255,255,255,.22) 50%, rgba(255,255,255,0) 62%);
+            mix-blend-mode: soft-light;
+            transform: translateX(-100%);
+            pointer-events: none;
+        }
+        .media-grain {
+            position: absolute; inset: 0; opacity: .07; mix-blend-mode: overlay; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+        .hero-frame {
+            position: relative;
+            max-width: 1480px;
+            margin: 0 auto;
+            aspect-ratio: 1000 / 580;
+            container-type: inline-size;
+        }
+        .hero-copy {
+            position: absolute; z-index: 4;
+            left: 8cqw; top: 9cqw;
+            width: 56cqw;
+        }
+        .hero-title {
+            margin: 0;
+            font-family: var(--font);
+            font-weight: 700;
+            font-size: clamp(38px, 5.3cqw, 80px);
+            line-height: 1.02;
+            letter-spacing: -.02em;
+            text-shadow: 0 2px 24px rgba(28, 56, 30, .25);
+        }
+        .split-line { display: block; overflow: hidden; padding: 0 .05em .1em 0; margin-bottom: -.1em; }
+        .word { display: inline-block; white-space: nowrap; }
+        .char { display: inline-block; }
+        .hero-sub {
+            margin: 2.2cqw 0 0;
+            max-width: max(300px, 27cqw);
+            font-size: clamp(15px, 1.2cqw, 18px);
+            font-weight: 500;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, .95);
+            text-shadow: 0 1px 12px rgba(28, 56, 30, .45);
+        }
+        .hero-wave {
+            position: absolute; left: 0; right: 0; bottom: -1px; z-index: 5;
+            width: 100%; height: clamp(36px, 7vw, 104px);
+            pointer-events: none;
+        }
+
+        /* ---------- Feature (glow card + copy) ---------- */
+        .mid { position: relative; background: var(--mint); }
+        .mid-top {
+            display: grid;
+            grid-template-columns: minmax(0, 40fr) minmax(0, 44fr);
+            gap: clamp(32px, 7vw, 110px);
+            align-items: center;
+            padding-top: clamp(48px, 5vw, 80px);
+            padding-bottom: clamp(30px, 3vw, 50px);
+        }
+        .feature { position: relative; z-index: 2; }
+        .feature-frame {
+            position: relative;
+            padding: 14px;
+            border-radius: 32px;
+            border: 1.5px solid rgba(255, 255, 255, .95);
+            background: rgba(255, 255, 255, .3);
+            box-shadow: 0 0 0 6px rgba(255, 255, 255, .28), 0 0 44px rgba(255, 255, 255, .85), 0 34px 60px -34px rgba(40, 80, 40, .45);
+            transition: box-shadow .6s ease;
+        }
+        .feature-frame:hover { box-shadow: 0 0 0 8px rgba(255, 255, 255, .4), 0 0 70px rgba(255, 255, 255, 1), 0 34px 60px -30px rgba(40, 80, 40, .5); }
+        .feature-scene {
+            aspect-ratio: 1.42;
+            border-radius: 20px;
+            overflow: hidden;
+            background: radial-gradient(ellipse 60% 60% at 50% 38%, #d7ead1, #b1d1aa 70%, #a1c69a);
+            --floor: 22; --floor-top: #c3dcbb; --floor-bottom: #dcecd6;
+        }
+        .slide { transform-origin: 50% 100%; }
+        .slide:not(.is-active) { visibility: hidden; opacity: 0; }
+        .feature-nav {
+            position: absolute; top: 50%; z-index: 3;
+            width: 40px; height: 40px; margin-top: -20px;
+            display: grid; place-items: center;
+            border-radius: 50%;
+            color: var(--ink-soft);
+            transition: background .3s, color .3s, transform .5s var(--spring);
+        }
+        .feature-nav:hover { background: #fff; color: var(--ink); transform: scale(1.12); }
+        .feature-nav svg { width: 14px; height: 14px; }
+        .feature-nav.prev { left: -52px; }
+        .feature-nav.next { right: -52px; }
+        .feature-dots { display: flex; justify-content: center; gap: 8px; margin-top: 18px; }
+        .feature-dots button {
+            width: 8px; height: 8px; border-radius: 99px;
+            background: rgba(30, 41, 32, .2);
+            transition: width .5s var(--spring), background .3s;
+        }
+        .feature-dots button[aria-current="true"] { width: 26px; background: var(--leaf); }
+        .mid-copy { position: relative; z-index: 2; }
+        .mid-title {
+            margin: 0 0 22px;
+            font-family: var(--font); font-weight: 700;
+            font-size: clamp(34px, 3.8vw, 58px);
+            line-height: 1.08; letter-spacing: -.02em;
+            color: #2A352C;
+        }
+        .mid-copy p { margin: 0 0 34px; max-width: 520px; color: var(--ink-soft); font-size: 17px; }
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 15px 30px;
+            border-radius: 999px;
+            background: var(--leaf); color: #fff;
+            font-size: 15px; font-weight: 500;
+            box-shadow: 0 12px 24px -12px rgba(42, 102, 49, .8);
+            transition: background .3s ease, transform .5s var(--spring), box-shadow .4s ease;
+        }
+        .btn-primary:hover { background: var(--leaf-dark); transform: translateY(-2px) scale(1.03); box-shadow: 0 16px 28px -12px rgba(42, 102, 49, .85); }
+        .btn-primary:active, .btn-ghost:active { transform: scale(.96); transition-duration: .15s; }
+        .btn-primary .arrow, .btn-ghost .arrow { transition: transform .5s var(--spring); }
+        .btn-primary:hover .arrow, .btn-ghost:hover .arrow { transform: translateX(4px); }
+
+        /* Wave band between feature and collections */
+        .band-wave { display: block; width: 100%; height: clamp(60px, 10vw, 150px); margin-top: -1px; }
+        .band { position: relative; background: var(--mint-light); --rail-bg: var(--mint-light); }
+
+        .row2 {
+            display: grid;
+            grid-template-columns: minmax(0, 36fr) minmax(0, 32fr) minmax(0, 32fr);
+            gap: clamp(28px, 4vw, 60px);
+            align-items: center;
+            padding-top: clamp(20px, 2vw, 30px);
+            padding-bottom: clamp(70px, 8vw, 120px);
+        }
+        .group-card {
+            position: relative; z-index: 2;
+            aspect-ratio: 1.09;
+            border-radius: 28px;
+            overflow: hidden;
+            background: radial-gradient(ellipse 65% 60% at 55% 35%, #cfe5c8, #a7cb9f 72%, #98c091);
+            box-shadow: 0 30px 50px -30px rgba(40, 80, 40, .5);
+            --floor: 24; --floor-top: #bcd8b4; --floor-bottom: #d6e9d0;
+        }
+        .orb-card { position: relative; z-index: 2; text-align: center; }
+        .cta { display: inline-block; }
+        .orb {
+            position: relative;
+            width: var(--orb, 210px); height: var(--orb, 210px);
+            margin: 0 auto 22px;
+            display: grid; place-items: center;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .orb-arcs { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+        .arc { fill: none; stroke: rgba(62, 105, 66, .38); stroke-width: 2; stroke-linecap: round; }
+        .arc-a { stroke-dasharray: 70 30 34 343; }
+        .arc-b { stroke-dasharray: 52 165; stroke: rgba(62, 105, 66, .24); }
+        .orb-face {
+            position: relative;
+            width: calc(var(--orb, 210px) * .76); height: calc(var(--orb, 210px) * .76);
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #F6FAF3;
+            box-shadow: 0 18px 34px -16px rgba(30, 70, 34, .55);
+            transition: transform .7s var(--spring);
+        }
+        .orb:hover .orb-face, .orb:focus-visible .orb-face { transform: scale(1.08) rotate(-4deg); }
+        .orb-face.leafy { background: radial-gradient(circle at 50% 35%, #a6cb9f, #6f9c6c); }
+        .orb-face.spiky { background: radial-gradient(circle at 50% 30%, #fbfdf9, #e4eee0); }
+        .orb-face img { position: absolute; }
+        .orb-card h3 { margin: 0 0 8px; font-family: var(--font); font-weight: 700; font-size: 21px; color: #2A352C; }
+        .orb-card p { margin: 0 auto; max-width: 280px; font-size: 16px; color: var(--ink-mute); }
+
+        .scrub-meter {
+            position: absolute; right: calc(var(--edge) + clamp(10px, 1.6vw, 26px)); top: 46%;
+            height: 300px; width: 24px; z-index: 6;
+            display: flex; flex-direction: column; align-items: center; gap: 14px;
+            color: var(--ink);
+        }
+        .scrub-track { position: relative; flex: 0 0 120px; width: 1.5px; background: rgba(30, 41, 32, .18); }
+        .scrub-fill { position: absolute; inset: 0; background: var(--ink); transform-origin: 50% 0; }
+        .scrub-fill::after {
+            content: ''; position: absolute; bottom: -1px; left: 50%; width: 7px; height: 7px;
+            border: solid var(--ink); border-width: 0 1.5px 1.5px 0; transform: translate(-50%, 0) rotate(45deg);
+        }
+        .scrub-label { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 15px; font-weight: 500; letter-spacing: .04em; white-space: nowrap; }
+
+        /* ---------- Placement ---------- */
+        .placement {
+            position: relative;
+            background: var(--mint-light);
+            --rail-bg: var(--mint-light);
+            min-height: clamp(620px, 52vw, 780px);
+            overflow: hidden;
+        }
+        .placement-copy {
+            position: relative; z-index: 2;
+            padding-top: clamp(80px, 9vw, 140px);
+            padding-bottom: 80px;
+        }
+        .placement-copy > div { max-width: min(560px, 42vw); }
+        .placement-title {
+            margin: 0 0 30px;
+            font-family: var(--font);
+            font-weight: 400;
+            font-size: clamp(52px, 7.6vw, 118px);
+            line-height: .98;
+            letter-spacing: -.025em;
+        }
+        .placement-copy p { margin: 0 0 36px; color: var(--ink-soft); font-size: 17px; }
+        .btn-ghost {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 15px 30px;
+            border-radius: 999px;
+            border: 1.5px solid rgba(30, 41, 32, .35);
+            font-size: 15px; font-weight: 500;
+            transition: background .3s ease, color .3s ease, transform .5s var(--spring);
+        }
+        .btn-ghost:hover { background: var(--ink); color: var(--page); transform: translateY(-2px); }
+        .panel {
+            position: absolute; right: 0; bottom: 0;
+            top: clamp(30px, 3vw, 50px);
+            width: 48.5%;
+            border-radius: 34px 0 0 0;
+            overflow: hidden;
+            background: linear-gradient(180deg, #86AF83, #7FA27F);
+            box-shadow: -30px 30px 60px -40px rgba(30, 70, 34, .45);
+            /* left of the photo: tall plant on its round pedestal, in focus here (the hero blurs it) */
+            --focus: 0% 58%;
+            --soft-mask: linear-gradient(270deg, #000 0%, #000 8%, transparent 32%);
+            --scrim:
+                radial-gradient(ellipse 80% 75% at 32% 45%, rgba(28, 56, 32, 0) 55%, rgba(28, 56, 32, .26) 100%),
+                linear-gradient(180deg, rgba(28, 56, 32, 0) 70%, rgba(28, 56, 32, .2) 100%);
+        }
+        /* taller than the panel so the scroll parallax never shows an edge */
+        .panel-media { position: absolute; left: 0; right: 0; top: -8%; bottom: -8%; }
+
+        .site-footer {
+            position: relative; z-index: 2;
+            display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+            padding-top: 28px; padding-bottom: 28px;
+            font-size: 13px; color: var(--ink-mute);
+            border-top: 1px solid rgba(30, 41, 32, .08);
+        }
+        .site-footer nav { display: flex; gap: 26px; }
+        .site-footer a:hover { color: var(--ink); }
+
+        /* Scroll-drawn dotted trail across the page */
+        main { position: relative; overflow-x: clip; }
+        .trail { position: absolute; top: 0; left: 0; width: 100%; z-index: 5; pointer-events: none; overflow: visible; }
+        .trail-dots { fill: none; stroke: rgba(62, 105, 66, .55); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 0.1 9; }
+        .trail-mask-path { fill: none; stroke: #fff; stroke-width: 14; }
+
+        .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 1100px) {
+            :root { --rail: 0px; }
+            .rail, .scrub-meter { display: none; }
+            .nav { grid-template-columns: 60px auto 1fr auto; }
+            .feature-nav.prev { left: -8px; }
+            .feature-nav.next { right: -8px; }
+            .feature-nav { background: rgba(255, 255, 255, .8); }
+        }
+        /* Tablets and landscape phones: burger nav, smaller orbs, placement stacks */
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .nav-cta { justify-self: end; }
+            .row2 { --orb: clamp(150px, 21vw, 210px); }
+            .placement-copy > div { max-width: 620px; }
+            .panel { position: relative; width: auto; top: auto; margin-left: var(--gutter); height: min(110vw, 620px); --focus: 8% 58%; }
+            .trail { display: none; }
+        }
+        /* Phones (portrait): hero stacks text over the photo and fills the screen; feature stacks */
+        @media (max-width: 720px) {
+            .hero-frame {
+                aspect-ratio: auto; container-type: normal;
+                padding-top: 40px;
+                min-height: 560px;
+                min-height: max(560px, calc(100svh - 70px));
+            }
+            .hero-media {
+                --focus: 80% 80%;
+                --soft-mask: linear-gradient(180deg, #000 0%, #000 38%, transparent 62%);
+                --scrim: linear-gradient(180deg, rgba(34, 66, 38, .68) 0%, rgba(34, 66, 38, .42) 42%, rgba(34, 66, 38, 0) 66%);
+            }
+            .hero-copy { position: relative; left: auto; top: auto; width: auto; padding: 0 var(--gutter); }
+            .hero-title { font-size: clamp(28px, 9.6vw, 46px); }
+            .hero-sub { margin-top: 18px; }
+            .mid-top { grid-template-columns: 1fr; }
+            /* collections become the group card over two orbs */
+            .row2 {
+                grid-template-columns: 1fr 1fr;
+                column-gap: clamp(16px, 4vw, 40px); row-gap: 44px;
+                align-items: start;
+                --orb: clamp(124px, 30vw, 210px);
+            }
+            .group-card { grid-column: 1 / -1; max-width: 560px; width: 100%; margin: 0 auto; }
+            .orb-card h3 { font-size: clamp(17px, 4.4vw, 21px); }
+            .orb-card p { font-size: clamp(14px, 3.6vw, 16px); }
+            .feature, .mid-copy { width: 100%; max-width: 560px; margin: 0 auto; }
+            .placement-copy { padding-top: 56px; padding-bottom: 56px; }
+        }
+        @media (max-width: 560px) {
+            .nav { height: 64px; grid-template-columns: 56px 1fr; }
+            .nav-cta { display: none; }
+            .logo { font-size: 24px; }
+            .drawer-panel { padding-top: 84px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .media-light { animation: none; }
+            *, *::before, *::after { transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <header class="nav">
+        <button class="burger" type="button" aria-label="Open menu" aria-controls="drawer" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <a class="logo" href="#">Verdant</a>
+        <ul class="nav-links">
+            <li class="has-menu">
+                <button type="button" aria-haspopup="true">Shop
+                    <svg class="chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+                <ul class="menu">
+                    <li><a href="#">Indoor Trees</a></li>
+                    <li><a href="#">Succulents</a></li>
+                    <li><a href="#">Pots &amp; Pedestals</a></li>
+                </ul>
+            </li>
+            <li class="has-menu">
+                <button type="button" aria-haspopup="true">Collections
+                    <svg class="chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+                <ul class="menu">
+                    <li><a href="#">Sculptural Forms</a></li>
+                    <li><a href="#">Low Light</a></li>
+                    <li><a href="#">Pet Friendly</a></li>
+                </ul>
+            </li>
+            <li><a href="#">Care Guide</a></li>
+            <li><a href="#">Journal</a></li>
+        </ul>
+        <a class="nav-cta" href="#">Shop Collection</a>
+    </header>
+
+    <div class="drawer" id="drawer">
+        <div class="drawer-scrim"></div>
+        <nav class="drawer-panel" aria-label="Menu">
+            <button class="drawer-close" type="button" aria-label="Close menu">&times;</button>
+            <a href="#">Shop</a>
+            <a href="#">Collections</a>
+            <a href="#">Care Guide</a>
+            <a href="#">Journal</a>
+            <small>&copy; 2026 Verdant. Curating nature.</small>
+        </nav>
+    </div>
+
+    <main>
+        <svg class="trail" aria-hidden="true">
+            <defs>
+                <mask id="trail-mask" maskUnits="userSpaceOnUse">
+                    <path class="trail-mask-path"/>
+                </mask>
+            </defs>
+            <path class="trail-dots" mask="url(#trail-mask)"/>
+        </svg>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="rail" data-rail="intro"><span class="rail-line"></span><span class="rail-label">MOTION DESIGN SYSTEM</span></div>
+
+            <div class="hero-media" role="img" aria-label="Studio arrangement of potted plants on sage, beige and green pedestals">
+                <div class="media-inner">
+                    <img class="media-img" src="images/hero-studio.webp" alt="" width="2000" height="1116" fetchpriority="high">
+                    <img class="media-img media-img--soft" src="images/hero-studio.webp" alt="" width="2000" height="1116">
+                </div>
+                <div class="media-scrim"></div>
+                <div class="media-light"></div>
+                <div class="media-sheen"></div>
+                <div class="media-grain"></div>
+            </div>
+
+            <div class="hero-frame">
+                <div class="hero-copy">
+                    <h1 class="hero-title" aria-label="Curated Greenery For Modern Spaces">
+                        <span class="split-line" data-line aria-hidden="true">Curated</span>
+                        <span class="split-line" data-line aria-hidden="true">Greenery For</span>
+                        <span class="split-line" data-line aria-hidden="true">Modern Spaces</span>
+                    </h1>
+                    <p class="hero-sub">Bring life into your everyday environment with hand-selected sculptural plants, nurtured for their architectural forms.</p>
+                </div>
+            </div>
+
+            <svg class="hero-wave" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true">
+                <path class="hero-wave-path" d="M-200 96 C 200 104 560 88 900 54 C 1140 30 1320 24 1640 28 V 140 H -200 Z" fill="#E2F0DB"/>
+            </svg>
+        </section>
+
+        <!-- FEATURE -->
+        <section class="mid" id="collections">
+            <div class="wrap mid-top">
+                <div class="feature">
+                    <button class="feature-nav prev" type="button" aria-label="Previous plant">
+                        <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M10 1 3 7l7 6z" fill="currentColor"/></svg>
+                    </button>
+                    <div class="feature-frame">
+                        <div class="feature-scene scene" role="img" aria-label="Featured plant in a studio setting">
+                            <div class="scene-floor"></div>
+                            <div class="item slide is-active" data-name="Snake plant" style="--x:50;--b:10">
+                                <div class="item-inner">
+                                    <div class="sway" data-sway style="--pw:14;--ph:20;--taper:17%">
+                                        <img class="foliage" src="images/cutouts/snake-plant.webp" alt="" style="--fw:31" draggable="false">
+                                        <div class="pot cream"><span class="pot-rim"></span><span class="pot-body"></span></div>
+                                    </div>
+                                    <div class="base ground" style="--bw:14"></div>
+                                </div>
+                            </div>
+                            <div class="item slide" data-name="Lucky bamboo" style="--x:50;--b:10">
+                                <div class="item-inner">
+                                    <div class="sway" data-sway style="--pw:13;--ph:14">
+                                        <img class="foliage" src="images/cutouts/lucky-bamboo.webp" alt="" style="--fw:34" draggable="false">
+                                        <div class="pot"><span class="pot-rim"></span><span class="pot-body"></span></div>
+                                    </div>
+                                    <div class="base ground" style="--bw:14"></div>
+                                </div>
+                            </div>
+                            <div class="item slide" data-name="Rubber plant" style="--x:50;--b:10">
+                                <div class="item-inner">
+                                    <div class="sway" data-sway style="--pw:14;--ph:15">
+                                        <img class="foliage" src="images/cutouts/rubber-plant.webp" alt="" style="--fw:27" draggable="false">
+                                        <div class="pot sage"><span class="pot-rim"></span><span class="pot-body"></span></div>
+                                    </div>
+                                    <div class="base ground" style="--bw:15"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="feature-nav next" type="button" aria-label="Next plant">
+                        <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 1l7 6-7 6z" fill="currentColor"/></svg>
+                    </button>
+                    <div class="feature-dots" role="group" aria-label="Choose plant">
+                        <button type="button" aria-label="Snake plant" aria-current="true"></button>
+                        <button type="button" aria-label="Lucky bamboo" aria-current="false"></button>
+                        <button type="button" aria-label="Rubber plant" aria-current="false"></button>
+                    </div>
+                    <p class="sr-only" aria-live="polite" data-feature-status>Showing snake plant</p>
+                </div>
+
+                <div class="mid-copy">
+                    <h2 class="mid-title" aria-label="Cultivate Your Sanctuary">
+                        <span class="split-line" data-line aria-hidden="true">Cultivate Your</span>
+                        <span class="split-line" data-line aria-hidden="true">Sanctuary</span>
+                    </h2>
+                    <p>Every plant is nurtured in our greenhouse and selected for its architectural form. Discover botanical companions that turn your rooms into serene, breathing spaces.</p>
+                    <div class="cta"><a class="btn-primary" href="#">Explore Botanicals <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+                </div>
+            </div>
+
+            <div class="scrub-meter" aria-hidden="true">
+                <span class="scrub-track"><span class="scrub-fill"></span></span>
+                <span class="scrub-label">Scrub timeline</span>
+            </div>
+        </section>
+
+        <!-- COLLECTIONS -->
+        <div class="band">
+            <svg class="band-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true" style="background: var(--mint)">
+                <path class="band-wave-back" d="M-200 70 C 160 20 520 110 860 80 C 1140 56 1360 20 1640 40 V 120 H -200 Z" fill="#C6DFBC"/>
+                <path class="band-wave-front" d="M-200 96 C 240 60 560 122 900 98 C 1160 80 1380 60 1640 70 V 120 H -200 Z" fill="#EBF5E6"/>
+            </svg>
+            <div class="rail" data-rail><span class="rail-line"></span><span class="rail-label">IMPLEMENTATION: GSAP + SPRING MOTION</span></div>
+
+            <div class="wrap row2">
+                <div class="group-card scene" role="img" aria-label="Group of potted plants on a studio floor">
+                    <div class="scene-floor"></div>
+                    <div class="item" data-depth="0.3" style="--x:70;--b:22">
+                        <div class="item-inner">
+                            <div class="sway" data-sway style="--pw:14;--ph:11;--sink:3.6">
+                                <img class="foliage" src="images/cutouts/monstera.webp" alt="" style="--fw:30" draggable="false">
+                                <div class="pot"><span class="pot-rim"></span><span class="pot-body"></span></div>
+                            </div>
+                            <div class="base block" style="--bw:24;--bh:9"></div>
+                        </div>
+                    </div>
+                    <div class="item" data-depth="0.5" style="--x:27;--b:11">
+                        <div class="item-inner">
+                            <div class="sway" data-sway style="--pw:14;--ph:14">
+                                <img class="foliage" src="images/cutouts/eucalyptus.webp" alt="" style="--fw:23" draggable="false">
+                                <div class="pot"><span class="pot-rim"></span><span class="pot-body"></span></div>
+                            </div>
+                            <div class="base ground" style="--bw:15"></div>
+                        </div>
+                    </div>
+                    <div class="item" data-depth="0.7" style="--x:88;--b:7">
+                        <div class="item-inner">
+                            <div class="sway" data-sway style="--pw:10;--ph:13;--taper:5%">
+                                <img class="foliage" src="images/cutouts/snake-plant.webp" alt="" style="--fw:18;transform:scaleX(-1)" draggable="false">
+                                <div class="pot"><span class="pot-rim"></span><span class="pot-body"></span></div>
+                            </div>
+                            <div class="base ground" style="--bw:11"></div>
+                        </div>
+                    </div>
+                    <div class="item" data-depth="0.9" style="--x:52;--b:5">
+                        <div class="item-inner">
+                            <div class="sway" data-sway>
+                                <img class="foliage own-pot" src="images/cutouts/aloe-mint-pot.webp" alt="" style="--fw:16" draggable="false">
+                            </div>
+                            <div class="base ground" style="--bw:16"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <article class="orb-card">
+                    <div class="orb" tabindex="0" aria-label="Indoor Trees">
+                        <svg class="orb-arcs" viewBox="0 0 168 168" aria-hidden="true">
+                            <circle class="arc arc-a" cx="84" cy="84" r="76"/>
+                            <circle class="arc arc-b" cx="84" cy="84" r="69"/>
+                        </svg>
+                        <div class="orb-face leafy">
+                            <img src="images/cutouts/rubber-plant.webp" alt="" style="width:150%;left:-25%;top:-4%">
+                        </div>
+                    </div>
+                    <h3>Indoor Trees</h3>
+                    <p>Make a structural statement with large-scale foliage.</p>
+                </article>
+
+                <article class="orb-card">
+                    <div class="orb" tabindex="0" aria-label="Rare Succulents">
+                        <svg class="orb-arcs" viewBox="0 0 168 168" aria-hidden="true">
+                            <circle class="arc arc-a" cx="84" cy="84" r="76"/>
+                            <circle class="arc arc-b" cx="84" cy="84" r="69"/>
+                        </svg>
+                        <div class="orb-face spiky">
+                            <img src="images/cutouts/aloe-stone-pot.webp" alt="" style="width:92%;left:4%;top:6%">
+                        </div>
+                    </div>
+                    <h3>Rare Succulents</h3>
+                    <p>Low-maintenance desert specimens for any surface.</p>
+                </article>
+            </div>
+        </div>
+
+        <!-- PLACEMENT -->
+        <section class="placement" id="journal">
+            <div class="rail" data-rail><span class="rail-line"></span><span class="rail-label">Scroll-driven triggers &amp; spring physics</span></div>
+
+            <div class="wrap placement-copy">
+                <div>
+                    <h2 class="placement-title" aria-label="The Art of Placement">
+                        <span class="split-line" data-line aria-hidden="true">The Art of</span>
+                        <span class="split-line" data-line aria-hidden="true">Placement</span>
+                    </h2>
+                    <p>Plants are more than decor &mdash; they are living sculptures that breathe life into your interior architecture. Explore our guide to integrating greenery thoughtfully.</p>
+                    <div class="cta"><a class="btn-ghost" href="#">Read the Journal <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+                </div>
+            </div>
+
+            <div class="panel" role="img" aria-label="Tall leafy plant in a white pot on a round pedestal, in front of an arched sage wall">
+                <div class="panel-media">
+                    <div class="media-inner">
+                        <img class="media-img" src="images/hero-studio.webp" alt="" width="2000" height="1116" loading="lazy">
+                        <img class="media-img media-img--soft" src="images/hero-studio.webp" alt="" width="2000" height="1116" loading="lazy">
+                    </div>
+                </div>
+                <div class="media-scrim"></div>
+                <div class="media-light"></div>
+                <div class="media-sheen"></div>
+                <div class="media-grain"></div>
+            </div>
+        </section>
+
+        <footer class="wrap site-footer">
+            <div>&copy; 2026 Verdant. Curating nature.</div>
+            <nav aria-label="Footer">
+                <a href="#">Privacy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact</a>
+            </nav>
+        </footer>
+    </main>
+
+    <script>
+    (() => {
+        const root = document.documentElement;
+        const $ = (s, el = document) => el.querySelector(s);
+        const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const animate = !!(window.gsap && window.ScrollTrigger) && !reduce;
+
+        /* ---------- Plain UI (works without GSAP) ---------- */
+        const nav = $('.nav');
+        const onScroll = () => nav.classList.toggle('is-scrolled', scrollY > 8);
+        addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        const burger = $('.burger'), drawer = $('#drawer');
+        const setDrawer = open => {
+            document.body.classList.toggle('drawer-open', open);
+            burger.setAttribute('aria-expanded', String(open));
+            burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+            drawer.inert = !open;
+            if (open) $('.drawer-panel a', drawer).focus();
+        };
+        burger.addEventListener('click', () => setDrawer(!document.body.classList.contains('drawer-open')));
+        drawer.addEventListener('click', e => { if (e.target.closest('a, .drawer-scrim, .drawer-close')) setDrawer(false); });
+        addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('drawer-open')) { setDrawer(false); burger.focus(); } });
+        drawer.inert = true;
+
+        const menus = $$('.has-menu');
+        const closeMenus = except => menus.forEach(m => {
+            if (m === except) return;
+            m.classList.remove('is-open');
+            $('button', m).setAttribute('aria-expanded', 'false');
+        });
+        menus.forEach(m => {
+            const btn = $('button', m);
+            btn.setAttribute('aria-expanded', 'false');
+            btn.addEventListener('click', () => {
+                const open = !m.classList.contains('is-open');
+                closeMenus(m);
+                m.classList.toggle('is-open', open);
+                btn.setAttribute('aria-expanded', String(open));
+            });
+        });
+        document.addEventListener('click', e => { if (!e.target.closest('.has-menu')) closeMenus(); });
+        addEventListener('keydown', e => { if (e.key === 'Escape') closeMenus(); });
+
+        /* ---------- Spring sway: hover leans a plant toward the cursor in 3D,
+           brushing past it sets it swinging, and a light breeze keeps it alive. ---------- */
+        const springs = new Map();
+        if (!reduce) {
+            $$('[data-sway]').forEach((el, i) => {
+                const s = { el, rz: 0, vz: 0, ry: 0, vy: 0, ty: 0, lastX: null, phase: i * 1.7, visible: false };
+                el.addEventListener('pointermove', e => {
+                    const r = el.getBoundingClientRect();
+                    s.ty = ((e.clientX - r.left) / r.width - .5) * 22;
+                    if (s.lastX !== null) s.vz += (e.clientX - s.lastX) * 1.1;
+                    s.lastX = e.clientX;
+                });
+                el.addEventListener('pointerleave', () => { s.ty = 0; s.lastX = null; });
+                el.addEventListener('pointerdown', () => { s.vz += (Math.random() < .5 ? -1 : 1) * 70; });
+                springs.set(el, s);
+            });
+            const io = new IntersectionObserver(entries => entries.forEach(en => { springs.get(en.target).visible = en.isIntersecting; }));
+            springs.forEach(s => io.observe(s.el));
+
+            let last = performance.now();
+            const tick = now => {
+                const dt = Math.min(now - last, 48) / 1000, t = now / 1000;
+                last = now;
+                springs.forEach(s => {
+                    if (!s.visible) return;
+                    const wind = Math.sin(t * 1.25 + s.phase) * .7 + Math.sin(t * 2.9 + s.phase * 2) * .25;
+                    s.vz += (-130 * (s.rz - wind) - 8 * s.vz) * dt;      // stiffness 130, damping 8
+                    s.rz = Math.max(-14, Math.min(14, s.rz + s.vz * dt));
+                    s.vy += (-90 * (s.ry - s.ty) - 11 * s.vy) * dt;
+                    s.ry += s.vy * dt;
+                    s.el.style.transform = `perspective(700px) rotateY(${s.ry.toFixed(2)}deg) rotate(${s.rz.toFixed(2)}deg)`;
+                });
+                requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        }
+        const kick = (el, amount) => { const s = springs.get($('[data-sway]', el)); if (s) s.vz += amount; };
+
+        /* ---------- Feature carousel ---------- */
+        const feature = $('.feature'), scene = $('.feature-scene');
+        const slides = $$('.slide', feature), dots = $$('.feature-dots button', feature), status = $('[data-feature-status]');
+        let current = 0;
+        const show = (next, dir) => {
+            next = (next + slides.length) % slides.length;
+            if (next === current) return;
+            dir = dir || (next > current ? 1 : -1);
+            const out = slides[current], inn = slides[next];
+            inn.classList.add('is-active');
+            if (animate) {
+                const w = scene.clientWidth;
+                gsap.killTweensOf([out, inn]);
+                gsap.to(out, { x: -dir * w * .45, rotate: -dir * 8, autoAlpha: 0, duration: .45, ease: 'power2.in',
+                               onComplete: () => out.classList.remove('is-active') });
+                gsap.fromTo(inn, { x: dir * w * .45, rotate: dir * 10, autoAlpha: 0 },
+                                 { x: 0, rotate: 0, autoAlpha: 1, duration: 1.1, delay: .12, ease: 'elastic.out(1, .55)' });
+                kick(inn, -dir * 90);
+            } else {
+                out.classList.remove('is-active');
+            }
+            dots.forEach((d, i) => d.setAttribute('aria-current', String(i === next)));
+            status.textContent = 'Showing ' + inn.dataset.name.toLowerCase();
+            current = next;
+        };
+        $('.feature-nav.prev').addEventListener('click', () => show(current - 1, -1));
+        $('.feature-nav.next').addEventListener('click', () => show(current + 1, 1));
+        dots.forEach((d, i) => d.addEventListener('click', () => show(i)));
+
+        if (!animate) { root.classList.remove('js-anim'); return; }
+
+        /* ================= GSAP ================= */
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Split headings into words > chars so lines never break mid-word.
+        const split = heading => $$('[data-line]', heading).map(line => {
+            const chars = [];
+            const words = line.textContent.trim().split(/\s+/);
+            line.textContent = '';
+            words.forEach((w, i) => {
+                const word = document.createElement('span');
+                word.className = 'word';
+                for (const ch of w) {
+                    const c = document.createElement('span');
+                    c.className = 'char';
+                    c.textContent = ch;
+                    word.appendChild(c);
+                    chars.push(c);
+                }
+                line.appendChild(word);
+                if (i < words.length - 1) line.appendChild(document.createTextNode(' '));
+            });
+            return chars;
+        });
+
+        /* ---------- Studio photo helpers (hero + placement panel) ---------- */
+        // Photo settles in: zooms out of a soft focus pull, scrim fades up, a sheen sweeps across.
+        const focusPull = box => gsap.timeline()
+            .fromTo($('.media-inner', $(box)), { scale: 1.14, filter: 'blur(12px)' },
+                                               { scale: 1, filter: 'blur(0px)', duration: 2.4, ease: 'power2.out', clearProps: 'filter' }, 0)
+            .from($('.media-scrim', $(box)), { opacity: 0, duration: 1.6 }, .2)
+            .to($('.media-sheen', $(box)), { xPercent: 200, duration: 2, ease: 'power2.inOut' }, 1.3);
+        // Photo drifts against the cursor (the inner layer bleeds 3% so edges never show).
+        const cursorDrift = (box, amount) => {
+            const area = $(box), inner = $('.media-inner', area);
+            const toX = gsap.quickTo(inner, 'x', { duration: 1.2, ease: 'power3' });
+            const toY = gsap.quickTo(inner, 'y', { duration: 1.2, ease: 'power3' });
+            area.addEventListener('pointermove', e => {
+                const r = area.getBoundingClientRect();
+                toX(((e.clientX - r.left) / r.width - .5) * -amount);
+                toY(((e.clientY - r.top) / r.height - .5) * -amount * .65);
+            });
+            area.addEventListener('pointerleave', () => { toX(0); toY(0); });
+        };
+
+        /* ---------- Hero intro ---------- */
+        const heroLines = split($('.hero-title'));
+        const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        intro.from('.nav', { y: -30, autoAlpha: 0, duration: .8 }, 0)
+             .from('.hero .rail', { autoAlpha: 0, duration: .6 }, .1)
+             .from('.hero .rail-line', { scaleY: 0, transformOrigin: '50% 0', duration: 1.4, ease: 'power2.inOut' }, .1);
+        heroLines.forEach((chars, i) => {
+            intro.from(chars, { yPercent: 115, rotate: 7, autoAlpha: 0, duration: .9, stagger: .028, ease: 'back.out(1.7)' }, .3 + i * .16);
+        });
+        intro.from('.hero-sub', { y: 24, autoAlpha: 0, duration: .9 }, .95)
+             // photo settles in: zooms out of a soft focus pull
+             .add(focusPull('.hero-media'), 0);
+        root.classList.remove('js-anim');
+
+        const hero = $('.hero');
+        cursorDrift('.hero', 22);
+
+        // Hero: photo scrolls slower than the page and slips out of focus as it leaves
+        const heroScrub = { trigger: hero, start: 'top top', end: 'bottom top', scrub: true };
+        gsap.to('.hero-media', { yPercent: 16, filter: 'blur(6px)', ease: 'none', scrollTrigger: heroScrub });
+        gsap.to('.hero-copy', { y: -110, opacity: .15, ease: 'none', scrollTrigger: heroScrub });
+        gsap.to('.hero-wave-path', { x: -120, ease: 'none', scrollTrigger: heroScrub });
+
+        /* ---------- Section rails ---------- */
+        $$('[data-rail]:not([data-rail="intro"])').forEach(rail => {
+            const section = rail.parentElement;
+            gsap.from($('.rail-line', rail), { scaleY: 0, transformOrigin: '50% 0', ease: 'none',
+                scrollTrigger: { trigger: section, start: 'top 85%', end: 'bottom 85%', scrub: .5 } });
+            gsap.from($('.rail-label', rail), { autoAlpha: 0, y: 40, duration: 1, ease: 'power3.out',
+                scrollTrigger: { trigger: section, start: 'top 65%' } });
+        });
+
+        /* ---------- Feature ---------- */
+        gsap.from('.feature', { x: -140, autoAlpha: 0, duration: 1.3, ease: 'power3.out',
+            scrollTrigger: { trigger: '.mid-top', start: 'top 78%' } });
+        const midLines = split($('.mid-title'));
+        const midTl = gsap.timeline({ scrollTrigger: { trigger: '.mid-copy', start: 'top 80%' } });
+        midLines.forEach((chars, i) => midTl.from(chars, { yPercent: 110, autoAlpha: 0, duration: .8, stagger: .02, ease: 'back.out(1.6)' }, i * .14));
+        midTl.from('.mid-copy p', { x: 70, autoAlpha: 0, duration: 1, ease: 'power3.out' }, .25)
+             .from('.mid-copy .cta', { x: 70, autoAlpha: 0, scale: .9, duration: 1, ease: 'back.out(1.8)' }, .4);
+
+        // Parallax wave band between sections
+        const bandScrub = { trigger: '.band', start: 'top bottom', end: 'top top', scrub: true };
+        gsap.to('.band-wave-back', { x: -160, ease: 'none', scrollTrigger: bandScrub });
+        gsap.to('.band-wave-front', { x: 120, ease: 'none', scrollTrigger: bandScrub });
+
+        // "Scrub timeline" meter tracks progress through the middle sections
+        gsap.from('.scrub-fill', { scaleY: 0, ease: 'none',
+            scrollTrigger: { trigger: '.mid', start: 'top 60%', endTrigger: '.band', end: 'bottom 60%', scrub: true } });
+
+        /* ---------- Collections ---------- */
+        const groupTl = gsap.timeline({ scrollTrigger: { trigger: '.row2', start: 'top 80%' } });
+        groupTl.fromTo('.group-card', { clipPath: 'inset(100% 0% 0% 0% round 28px)' },
+                                      { clipPath: 'inset(0% 0% 0% 0% round 28px)', duration: 1.1, ease: 'power3.inOut' })
+               .from('.group-card .item-inner', { y: 70, autoAlpha: 0, duration: 1, stagger: .1, ease: 'back.out(1.6)' }, .45)
+               .from('.orb', { scale: .55, rotate: -25, autoAlpha: 0, duration: 1.3, stagger: .15, ease: 'elastic.out(1, .6)' }, .2)
+               .from('.orb-card h3, .orb-card p', { y: 24, autoAlpha: 0, duration: .8, stagger: .08 }, .5);
+
+        $$('.orb').forEach(orb => {
+            const spins = [
+                gsap.to($('.arc-a', orb), { rotation: 360, svgOrigin: '84 84', duration: 16, repeat: -1, ease: 'none' }),
+                gsap.to($('.arc-b', orb), { rotation: -360, svgOrigin: '84 84', duration: 24, repeat: -1, ease: 'none' }),
+            ];
+            const speed = v => spins.forEach(t => gsap.to(t, { timeScale: v, duration: .8, ease: 'power2.out' }));
+            orb.addEventListener('pointerenter', () => speed(5));
+            orb.addEventListener('pointerleave', () => speed(1));
+            orb.addEventListener('focus', () => speed(5));
+            orb.addEventListener('blur', () => speed(1));
+            orb.addEventListener('pointerdown', () => {
+                gsap.fromTo(orb, { scale: .88 }, { scale: 1, duration: 1.1, ease: 'elastic.out(1.1, .3)', clearProps: 'transform' });
+            });
+        });
+
+        /* ---------- Placement ---------- */
+        const placeLines = split($('.placement-title'));
+        const placeTl = gsap.timeline({ scrollTrigger: { trigger: '.placement', start: 'top 70%' } });
+        placeLines.forEach((chars, i) => placeTl.from(chars, { yPercent: 110, autoAlpha: 0, duration: 1, stagger: .03, ease: 'back.out(1.5)' }, i * .18));
+        placeTl.from('.placement-copy p, .placement-copy .cta', { y: 30, autoAlpha: 0, duration: .9, stagger: .12, ease: 'power3.out' }, .4)
+               .from('.panel', { x: 180, autoAlpha: 0, duration: 1.3, ease: 'power3.out' }, 0)
+               .add(focusPull('.panel'), .2);
+        cursorDrift('.panel', 18);
+        // Photo travels a little against the scroll inside its frame
+        gsap.fromTo('.panel-media', { yPercent: -6 }, { yPercent: 6, ease: 'none',
+            scrollTrigger: { trigger: '.panel', start: 'top bottom', end: 'bottom top', scrub: true } });
+
+        /* ---------- Dotted trail, drawn by scroll ---------- */
+        const main = $('main'), trail = $('.trail'), dotsPath = $('.trail-dots'), maskPath = $('.trail-mask-path');
+        const catmullRom = p => {
+            let d = `M${p[0][0]},${p[0][1]}`;
+            for (let i = 0; i < p.length - 1; i++) {
+                const p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p2;
+                const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+                const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+                d += ` C${c1} ${c2} ${p2}`;
+            }
+            return d;
+        };
+        let trailLength = 0;
+        const buildTrail = () => {
+            const m = main.getBoundingClientRect();
+            const rel = el => { const r = el.getBoundingClientRect(); return { t: r.top - m.top, b: r.bottom - m.top, h: r.height }; };
+            const W = m.width, heroR = rel(hero), card = rel($('.feature-frame')), row = rel($('.row2')), head = rel($('.placement-title'));
+            const pts = [
+                [-10, heroR.b - 14], [W * .52, heroR.b + 44], [W * .955, heroR.b - 4],
+                [W * .965, card.t + card.h * .78], [W * .63, row.t - 30], [W * .385, row.t + row.h * .12],
+                [W * .45, row.b - 10], [W * .2, head.t - 50],
+            ].map(([x, y]) => [Math.round(x), Math.round(y)]);
+            const d = catmullRom(pts);
+            trail.setAttribute('viewBox', `0 0 ${W} ${m.height}`);
+            trail.style.height = m.height + 'px';
+            dotsPath.setAttribute('d', d);
+            maskPath.setAttribute('d', d);
+            trailLength = maskPath.getTotalLength();
+            maskPath.style.strokeDasharray = trailLength;
+        };
+        buildTrail();
+        ScrollTrigger.addEventListener('refreshInit', buildTrail);
+        gsap.fromTo(maskPath, { strokeDashoffset: () => trailLength }, { strokeDashoffset: 0, ease: 'none',
+            scrollTrigger: { trigger: main, start: 'top top', end: 'bottom bottom', scrub: .6, invalidateOnRefresh: true } });
+
+        // Images and fonts change layout height; re-measure once they settle.
+        addEventListener('load', () => ScrollTrigger.refresh());
+        document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
+    })();
+    </script>
+</body>
+</html>
